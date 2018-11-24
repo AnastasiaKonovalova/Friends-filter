@@ -1,0 +1,24 @@
+{{#each friends}}
+  <li class="friend" draggable="true" id = "{{id}}">
+    <div class="friend__item">
+      <div class="friend__ava">
+        <img src="{{photo_50}}" alt="" class="friend__img">
+      </div>
+      <span class="friend__fullname">{{first_name}} {{last_name}}</span>
+    </div>
+
+    {{#if ../add}}
+      <button class="friends__action friends__action--add">
+        <svg class="cross svg--gray">
+          <use xlink:href="{{../svg}}"></use>
+        </svg>
+      </button>
+    {{else}}
+      <button class="friends__action">
+        <svg class="cross svg--gray">
+          <use xlink:href="{{../svg}}"></use>
+        </svg>
+      </button>
+    {{/if}}
+  </li>
+{{/each}}
