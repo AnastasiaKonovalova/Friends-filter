@@ -59,10 +59,24 @@ const renderFriends = (array, container) => {
 
     container.innerHTML = friendsHTML;
 };
+
+const renderFiltered = (arr, input, container) => {
+    const filteredFriends = arr.filter(friend =>
+        isMatching(`${friend.first_name} ${friend.last_name}`, input.value)
+    );
+
+    renderFriends(filteredFriends, container);
+};
+const findBoundInput = (zone) => {
+    switch(zone.dataset.bind){
+        case allFriendsInput.dataset.bind: return allFriendsInput; break;
+        case filteredFriendsInput.dataset.bind: return filteredFriendsInput; break;
+    }
+};
 // Form allFriendsList array wiyh loaded friends
 const formAllFriendsList = array =>{
     allFriendsList = array;
-}
+};
 // Toggling buttons in friend item
 const changeButton = (li) => {
     let btn = li.querySelector('button');
@@ -119,23 +133,34 @@ const DnD = (zones) =>{
             if (currentDrag) {
                 let targetZone = e.target.closest('ul');
                 let targetItem = e.target.closest('li');
-
-                if (targetZone !== currentDrag.sourse) {
-                    if (targetItem) {
-                        zone.insertBefore(currentDrag.dragObject, targetItem);
-                    } else {
-                        zone.appendChild(currentDrag.dragObject);
-
+                let boundInput = findBoundInput(targetZone);
+                
+                if(!boundInput.value){
+                    if (targetZone !== currentDrag.sourse) {
+                        if (targetItem) {
+                            zone.insertBefore(currentDrag.dragObject, targetItem);
+                        } else {
+                            zone.appendChild(currentDrag.dragObject);
+    
+                        }
+                        changeButton(currentDrag.dragObject);
+                        targetZone.classList.contains('friends-container') ?
+                            spliceAndPushFriend(currentDrag.dragObject, filteredFriendsList, allFriendsList) :
+                            spliceAndPushFriend(currentDrag.dragObject, allFriendsList, filteredFriendsList);
+    
+                    } else if (targetZone === currentDrag.sourse) {
+                        zone.insertBefore(currentDrag.dragObject, targetItem)
                     }
+                } else {
                     changeButton(currentDrag.dragObject);
                     targetZone.classList.contains('friends-container') ?
                         spliceAndPushFriend(currentDrag.dragObject, filteredFriendsList, allFriendsList) :
                         spliceAndPushFriend(currentDrag.dragObject, allFriendsList, filteredFriendsList);
-
-                } else if (targetZone === currentDrag.sourse) {
-                    zone.insertBefore(currentDrag.dragObject, targetItem)
+                    
+                    renderFiltered(allFriendsList, allFriendsInput, friendsContainer);
+                    renderFiltered(filteredFriendsList, filteredFriendsInput, friendsFilteredContainer);
                 }
-            };
+            }
             currentDrag = null;
         })
     })
@@ -150,18 +175,23 @@ const crossesAddListeners = (zones) => {
             if (btn) {
                 if ( btn.classList.contains('friends__action--add') && list === friendsContainer) {
                     spliceAndPushFriend(item, allFriendsList, filteredFriendsList)
-    
                     friendsContainer.removeChild(item);
-                    btn.classList.toggle('friends__action--add');
-                    friendsFilteredContainer.insertBefore(item, friendsFilteredContainer.firstElementChild);
+
+                    if(!filteredFriendsInput.value){
+                        renderFriends(filteredFriendsList, friendsFilteredContainer);
+                    } else {
+                        renderFiltered(filteredFriendsList, filteredFriendsInput, friendsFilteredContainer);
+                    }
     
                 } else {
                     spliceAndPushFriend(item, filteredFriendsList, allFriendsList);
-    
                     friendsFilteredContainer.removeChild(item);
-                    btn.classList.toggle('friends__action--add');
-                    friendsContainer.insertBefore(item, friendsContainer.firstElementChild);
-    
+
+                    if(!allFriendsInput.value){
+                        renderFriends(allFriendsList, friendsContainer);
+                    } else {
+                        renderFiltered(allFriendsList, allFriendsInput, friendsContainer);
+                    }
                 }
             }
 
@@ -173,35 +203,24 @@ DnD([friendsContainer, friendsFilteredContainer]);
 crossesAddListeners([friendsContainer, friendsFilteredContainer]);
 
 // Add event listeners to inputs
-allFriendsInput.addEventListener('keyup', () => {
-    const value = allFriendsInput.value;
-    
-    if (!value) {
+allFriendsInput.addEventListener('keyup', () => {    
+    if (!allFriendsInput.value) {
         renderFriends(allFriendsList, friendsContainer);
             
         return;
     }
-    
-    const filteredFriends = allFriendsList.filter(friend =>
-        isMatching(`${friend.first_name} ${friend.last_name}`, value)
-    );
-    
-    renderFriends(filteredFriends, friendsContainer);
+
+    renderFiltered(allFriendsList, allFriendsInput, friendsContainer)
 });
-filteredFriendsInput.addEventListener('keyup', () => {
-    const value = filteredFriendsInput.value;
-    
-    if (!value) {
+
+filteredFriendsInput.addEventListener('keyup', () => {    
+    if (!filteredFriendsInput.value) {
         renderFriends(filteredFriendsList, friendsFilteredContainer);
             
         return;
     }
-    
-    const filteredFriends = filteredFriendsList.filter(friend =>
-        isMatching(`${friend.first_name} ${friend.last_name}`, value)
-    );
-    
-    renderFriends(filteredFriends, friendsFilteredContainer);
+
+    renderFiltered(filteredFriendsList, filteredFriendsInput, friendsFilteredContainer)
 });
 // Save lists to local storage
 saveBtn.addEventListener('click', () => {

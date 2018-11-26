@@ -21,14 +21,14 @@
         <svg class="searcher-icon">
           <use xlink:href="/src/img/searcher.svg#searcher"></use>
         </svg>
-        <input class="filter__input input" id="allFriendsSearch" type="text" placeholder="Начните вводить имя друга"/>
+        <input class="filter__input input" id="allFriendsSearch" data-bind ="all-friends" type="text" placeholder="Начните вводить имя друга"/>
       </div>
 
       <div class="column column__right">
         <svg class="searcher-icon">
           <use xlink:href="/src/img/searcher.svg#searcher"></use>
         </svg>
-        <input class="filter__input input" id="filteredFriendsSearch" type="text" placeholder="Начните вводить имя друга"/>
+        <input class="filter__input input" id="filteredFriendsSearch" data-bind ="filtered-friends" type="text" placeholder="Начните вводить имя друга"/>
       </div>
     </div>
 
@@ -36,14 +36,14 @@
       <div class="content__left column column__left">
         <div class="content__header">Ваши друзья</div>
         <div class="content__list-wrap">
-          <ul class="content__list friends-container"></ul>
+          <ul class="content__list friends-container" data-bind ="all-friends"></ul>
         </div>
       </div>
 
       <div class="content__right column column__right">
         <div class="content__header">Друзья в списке</div>
         <div class="content__list-wrap">
-          <ul class="content__list friends-list"></ul>
+          <ul class="content__list friends-list" data-bind ="filtered-friends"></ul>
         </div>
       </div>
     </div>
