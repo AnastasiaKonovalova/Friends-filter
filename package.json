@@ -6,13 +6,9 @@
   "scripts": {
     "codestyle": "eslint src",
     "codestyle-fix": "eslint src --fix",
-    "travis": "npm run codestyle && npm test",
     "build": "webpack --progress --colors",
     "watch": "webpack-dev-server --progress --colors --open",
-    "start": "npm run watch",
-    "test": "karma start",
-    "cover": "istanbul cover _mocha -- test/*.js",
-    "prepare": "npm run travis"
+    "start": "npm run watch"
   },
   "author": "",
   "license": "MIT",
